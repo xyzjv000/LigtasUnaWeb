@@ -1,0 +1,169 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+html,
+body {
+    font-family: 'Montserrat';
+    height: 100%;
+    background-color: 'white';
+}
+
+.Toastify__toast-container--top-center .Toastify__toast-body {
+    text-align: center;
+}
+
+header {
+    height: 64px;
+    width: 100%;
+    box-shadow: 0 4px 6px 0 hsla(0, 0%, 0%, 0.2);
+    position: sticky;
+    top: 0;
+    background-color: white;
+}
+
+nav {
+    height: 100%;
+    width: 75%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-child {
+    pointer-events: none;
+}
+
+.content {
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+}
+
+.main_pro_box {
+    width: 100%;
+    height: 150px;
+    display: flex;
+}
+.pro_box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+}
+
+.pro_button {
+    height: 100px;
+    width: 240px;
+}
+
+.sub_box {
+    margin-top: 20px;
+}
+
+.modal-paper {
+    padding: 40px 60px;
+    width: 40%;
+    text-align: center;
+}
+
+.modal-category {
+    padding: 40px 60px;
+    text-align: center;
+}
+
+.MuiButton-label {
+    pointer-events: none;
+}
+
+.box {
+    width: 50%;
+    height: 80vh;
+    padding: 0 10px;
+    overflow-y: scroll;
+}
+::-webkit-scrollbar {
+    width: 0; /* Remove scrollbar space */
+    background: transparent; /* Optional: just make scrollbar invisible */
+}
+
+.reports {
+    width: 100%;
+    padding: 20px 40px;
+    margin-bottom: 13px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: white;
+    position: relative;
+}
+
+.ribbon {
+    position: absolute;
+    top: 1rem;
+    right: 0;
+    text-align: center;
+    width: 3rem;
+    background-color: #363537;
+    opacity: 0.8;
+    color: white;
+}
+
+.reports:hover {
+    background-color: whitesmoke;
+    transition: 0.5s;
+}
+.reports .ribbon,
+.reports p {
+    pointer-events: none;
+}
+
+.firstRow,
+.thirdRow,
+.fourthRow {
+    display: flex;
+    justify-content: space-between;
+}
+
+.firstRow,
+.secondRow,
+.thirdRow,
+.fourthRow {
+    margin-bottom: 5px;
+}
+
+input[type='text']:disabled,
+textarea:disabled {
+    background-color: none;
+    color: black;
+}
+
+input[type='file'] {
+    display: none;
+}
+
+.inputStyle {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: rgb(121, 76, 254);
+    color: #fff;
+}
+
+.userButtonCheck {
+    border: none;
+    background: #794cfe !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    color: white !important;
+}
