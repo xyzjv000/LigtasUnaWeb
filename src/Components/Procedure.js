@@ -114,7 +114,7 @@ function Procedure(props) {
     };
 
     const [imgArr, setImgArr] = useState([]);
-    const [data, setData] = useState({ title: '', description: '', vidFile: {} });
+    const [data, setData] = useState({ title: '', description: '', tools: '', medicine: '', vidFile: {} });
     const initialVid = { vidName: '', vidUrl: '', vidFile: [] };
     const initialImg = { imgName: '', imgUrl: '', imgFile: [] };
     const [imgData, setImgData] = useState(initialImg);
@@ -133,6 +133,14 @@ function Procedure(props) {
         if (events.target.id === 'title') {
             // events.target.value
             setData({ ...data, title: events.target.value });
+        }
+        if (events.target.id === 'tools') {
+            // events.target.value
+            setData({ ...data, tools: events.target.value });
+        }
+        if (events.target.id === 'medicine') {
+            // events.target.value
+            setData({ ...data, medicine: events.target.value });
         }
         if (events.target.id === 'description') {
             // events.target.value
@@ -334,6 +342,8 @@ function Procedure(props) {
         let firstaidContent = {
             faidPR_Name: data.title,
             faidPR_Des: data.description,
+            FaidPR_Tools: data.tools,
+            FaidPR_Medicine: data.medicine,
         };
         handleToggle();
         let files = [data.vidFile.vidFile];
@@ -548,6 +558,28 @@ function Procedure(props) {
                 <div className="sub_box">
                     <TextField
                         style={{ width: '50rem' }}
+                        id="tools"
+                        onChange={handleChange}
+                        label="Medical Tools"
+                        value={data.tools}
+                        variant="outlined"
+                        placeholder="Separate by comma ',' if many"
+                    />
+                </div>
+                <div className="sub_box">
+                    <TextField
+                        style={{ width: '50rem' }}
+                        id="medicine"
+                        onChange={handleChange}
+                        label="Medicine"
+                        value={data.medicine}
+                        variant="outlined"
+                        placeholder="Separate by comma ',' if many"
+                    />
+                </div>
+                <div className="sub_box">
+                    <TextField
+                        style={{ width: '50rem' }}
                         id="description"
                         onChange={handleChange}
                         label="Description"
@@ -564,7 +596,7 @@ function Procedure(props) {
                 </div>
                 {/* <Button onClick={sendPushNotification}>Test</Button> */}
             </div>
-            <Faker />
+            {/* <Faker /> */}
             {modalLoad()}
             <Backdrop className={classes.backdrop} open={loading}>
                 <CircularProgress color="inherit" />

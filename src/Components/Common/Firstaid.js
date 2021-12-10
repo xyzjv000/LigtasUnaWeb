@@ -91,6 +91,7 @@ const Firstaid = () => {
     const getFirstAid = async () => {
         await axios.get(`${user.api_url}firstaid/view?id=${parseInt(localStorage.getItem('faid'))}`).then((res) => {
             if (res.data.length > 0) {
+                console.log(res.data[0]);
                 setData(res.data[0]);
                 setNewUpdates({ ...newUpdates, desc: res.data[0].faidPR_Des });
             }
@@ -248,14 +249,40 @@ const Firstaid = () => {
             <p style={{ marginBottom: '5px', fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }}>
                 Posted : {localStorage.getItem('created')} | <span style={{ marginLeft: 5, color: 'darkgrey' }}>{data.views} Views</span>
             </p>
+
             <p>
                 {cats.map((cat) => {
                     return <Chip style={{ marginRight: '5px' }} label={cat} variant="outlined" />;
                 })}
             </p>
 
-            <br />
-            <div style={{ marginBottom: '50px' }}>
+            {data.faidPR_Tools ? (
+                <p style={{ marginTop: 10, fontSize: '1rem' }}>
+                    <span style={{ fontWeight: 600 }}>Tools : </span>
+                    {data.faidPR_Tools.split(',').map((item, index) => {
+                        return (
+                            <span style={{ fontSize: '1rem', color: 'rgba(0,0,0,0.7)' }} key={index}>
+                                {item} <b>|</b>
+                            </span>
+                        );
+                    })}
+                </p>
+            ) : null}
+
+            {data.faidPR_Medicine ? (
+                <p style={{ fontSize: '1rem' }}>
+                    <span style={{ fontWeight: 600 }}>Medicine : </span>
+                    {data.faidPR_Medicine.split(',').map((item, index) => {
+                        return (
+                            <span style={{ fontSize: '1rem', color: 'rgba(0,0,0,0.7)' }} key={index}>
+                                {item} <b>|</b>
+                            </span>
+                        );
+                    })}
+                </p>
+            ) : null}
+
+            <div style={{ marginBottom: '50px', marginTop: 10 }}>
                 {data.faidPR_Des.split('\n').map((item, index) => {
                     return (
                         <span style={{ fontSize: '1rem', color: 'rgba(0,0,0,0.7)' }} key={index}>
