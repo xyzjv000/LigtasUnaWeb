@@ -51,11 +51,12 @@ const LoginForm = (props) => {
         } else {
             await axios.post(`${user.api_url}user/login?type=admin`, field).then((res) => {
                 if (res.data.length < 1) {
-                    axios.post(`${user.api_url}user/login?type=_admin`, field).then((_res) => {
+                    axios.post(`${user.api_url}user/login?type=_admin`, field).then(async (_res) => {
                         if (_res.data.length < 1) {
                             errorLogin();
                         } else {
                             if (_res.data[0].status === 'active') {
+                                let org = await axios.get(`${user.api_url}organization?userId=${_res.data[0].user_ID}`);
                                 setUser((prev) => ({
                                     user_ID: _res.data[0].user_ID,
                                     user_Type: _res.data[0].user_Type,
@@ -67,6 +68,10 @@ const LoginForm = (props) => {
                                     location_Long: _res.data[0].location_Long,
                                     location_Lat: _res.data[0].location_Lat,
                                     reports: reports,
+                                    org_id: org ? org.data[0].id : null,
+                                    org_name: org ? org.data[0].name : null,
+                                    org_contact_person: org ? org.data[0].contact_Name : null,
+                                    org_contact_number: org ? org.data[0].contact_Number : null,
                                     api_url: prev.api_url,
                                 }));
 

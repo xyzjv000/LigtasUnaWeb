@@ -8,6 +8,7 @@ import Category from './Common/Category';
 import axios from 'axios';
 import { Context } from '../Store';
 import { useContext } from 'react';
+import Faker from './Faker';
 const useStyles = makeStyles((theme) => ({
     root: {
         '& > *': {
@@ -563,6 +564,7 @@ function Procedure(props) {
                 </div>
                 {/* <Button onClick={sendPushNotification}>Test</Button> */}
             </div>
+            <Faker />
             {modalLoad()}
             <Backdrop className={classes.backdrop} open={loading}>
                 <CircularProgress color="inherit" />

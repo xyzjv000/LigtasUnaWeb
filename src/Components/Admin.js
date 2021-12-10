@@ -21,6 +21,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
 import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
 import emailjs from 'emailjs-com';
+import faker from 'faker';
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: '#363537',
@@ -71,10 +72,12 @@ const useStyles = makeStyles((theme) => ({
 function Admin() {
     useEffect(() => {
         getSubscribers();
+        getOneOrg();
     }, []);
     const [user] = useContext(Context);
     const classes = useStyles();
     const [subs, setSubs] = useState([]);
+    const [org, setOrg] = useState([]);
     const [_page, setPage] = useState('active');
     const [status, setStatus] = useState('active');
     const getSubscribers = async () => {
@@ -92,7 +95,16 @@ function Admin() {
             alert('Connection Error');
         }
     };
-    const [tableHead, setTableHead] = useState(['First Name', 'Last Name', 'Username / Email', 'Number', 'Registered Date', 'Status']);
+
+    const getOneOrg = async () => {
+        await axios.get(`${user.api_url}organization/all`).then((res) => {
+            if (res.data.length > 0) {
+                setOrg(res.data);
+            }
+        });
+    };
+
+    const [tableHead, setTableHead] = useState(['First Name', 'Last Name', 'Username / Email', 'Number', 'Organization', 'Registered Date', 'Status']);
     const [open, setOpen] = React.useState(false);
     const handleClose = () => {
         setOpen(false);
@@ -106,7 +118,7 @@ function Admin() {
 
         if (val === 'active') {
             setStatus('active');
-            setTableHead(['First Name', 'Last Name', 'Username / Email', 'Number', 'Registered Date', 'Status']);
+            setTableHead(['First Name', 'Last Name', 'Username / Email', 'Number', 'Organization', 'Registered Date', 'Status']);
         }
         setPage(val);
     };
@@ -154,7 +166,7 @@ function Admin() {
             <Fab
                 onClick={getSubscribers}
                 variant="extended"
-                style={{ color: 'white', backgroundColor: '#794cfe', position: 'absolute', bottom: 20, right: 20 }}
+                style={{ color: 'white', backgroundColor: '#794cfe', position: 'absolute', bottom: 20, right: 20, zIndex: 100 }}
                 className={classes.margin}
             >
                 <RefreshIcon className={classes.extendedIcon} />
@@ -195,6 +207,9 @@ function Admin() {
                                     </StyledTableCell>
                                     <StyledTableCell key={item.index} align="center" component="th" scope="row">
                                         {item.user_ConNum}
+                                    </StyledTableCell>
+                                    <StyledTableCell key={item.index} align="center" component="th" scope="row">
+                                        {org.filter((o) => o.user_ID === item.user_ID).map((u) => u.name)}
                                     </StyledTableCell>
                                     <StyledTableCell key={item.index} align="center" component="th" scope="row">
                                         {new Date(item.user_CreatedAt).toLocaleDateString()}

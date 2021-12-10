@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Paper, TextField, createTheme, ThemeProvider, Backdrop, CircularProgress, makeStyles } from '@material-ui/core';
+import { Button, Paper, TextField, createTheme, ThemeProvider, Backdrop, CircularProgress, makeStyles, Select, MenuItem } from '@material-ui/core';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Context } from '../../Store';
@@ -41,10 +41,12 @@ function RegisterForm(props) {
         location_long: '',
         location_lat: '',
     });
+
+    const [orgfield, setOrgField] = useState({ name: 'None', cpname: '', cpnumber: '' });
     const [loading, isLoading] = useState(false);
     const [admins, setAdmins] = useState([]);
 
-    const [error, setError] = useState({ user_fname: '', user_lname: '', user_address: '' });
+    const [error, setError] = useState({ user_fname: '', user_lname: '', user_address: '', org_name: '' });
     const [reports, udpateReports] = useState(0);
     const handleLoading = () => {
         isLoading(false);
@@ -54,11 +56,18 @@ function RegisterForm(props) {
     };
 
     const customStyle = {
-        textAlign: 'center',
+        textAlign: 'left',
         width: '100%',
         margin: '10px 0',
     };
+    const _customStyle = {
+        textAlign: 'left',
+        width: '100%',
+        margin: '10px 0',
+        height: '48px',
+    };
     const onChangeHandler = (e) => {
+        console.log(e);
         if (e.target.id === 'fname') {
             const newValue = e.target.value;
             if (!newValue.match(/[%<>\\$'"*!@#^&()+={}|:;,.?_-]/)) {
@@ -91,6 +100,23 @@ function RegisterForm(props) {
         }
         if (e.target.id === 'cpassword') {
             setField({ ...field, cpassword: e.target.value });
+        }
+        if (e.target.id === 'orgcn') {
+            setOrgField({ ...orgfield, cpnumber: e.target.value });
+        }
+
+        if (e.target.id === 'orgcp') {
+            const newValue = e.target.value;
+            if (!newValue.match(/[%<>\\$'"*!@#^&()+={}|:;,.?_-]/)) {
+                setError({ ...error, org_name: '' });
+            } else {
+                setError({ ...error, org_name: 'Special Character not allowed!' });
+            }
+            setOrgField({ ...orgfield, cpname: e.target.value });
+        }
+
+        if (e.target.name === 'orgname') {
+            setOrgField({ ...orgfield, name: e.target.value });
         }
     };
     const getLocation = () => {
@@ -130,18 +156,19 @@ function RegisterForm(props) {
             field.user_fname === '' ||
             field.user_lname === '' ||
             field.user_address === '' ||
-            field.user_conNum === ''
+            field.user_conNum === '' ||
+            orgfield.name === 'None'
         ) {
             missingInput();
         } else if (isExists === true) {
             usernameTaken();
-        } else if (error.user_lname !== '' || error.user_fname !== '') {
+        } else if (error.user_lname !== '' || error.user_fname !== '' || error.org_name !== '') {
             specialChar();
         } else if (field.password !== field.cpassword) {
             errorPass();
         } else if (field.password.length < 8 || field.cpassword.length < 8) {
             errorPassLength();
-        } else if (field.user_conNum.length !== 11) {
+        } else if (field.user_conNum.length !== 11 || orgfield.cpnumber.length !== 11) {
             errorNum();
         } else {
             handleToggle();
@@ -149,23 +176,12 @@ function RegisterForm(props) {
                 if (res.data.length < 1) {
                     errorCreate();
                 } else {
-                    // setUser((prev) => ({
-                    //     user_ID: res.data[0].user_ID,
-                    //     user_Type: res.data[0].user_Type,
-                    //     user_Fname: res.data[0].user_Fname,
-                    //     user_Lname: res.data[0].user_Lname,
-                    //     user_Address: res.data[0].user_Address,
-                    //     user_ConNum: res.data[0].user_ConNum,
-                    //     username: res.data[0].username,
-                    //     location_Long: res.data[0].location_Long,
-                    //     location_Lat: res.data[0].location_Lat,
-                    //     reports: reports,
-                    //     api_url: prev.api_url,
-                    // }));
-                    // //get order count here
-                    // props.setActive();
-                    // handleLoading();
-                    // welcome();
+                    axios.post(`${user.api_url}organization/new`, {
+                        name: orgfield.name,
+                        contact_Name: orgfield.cpname,
+                        contact_Number: orgfield.cpnumber,
+                        users: { user_ID: res.data[0].user_ID },
+                    });
                     success();
                     handleLoading();
                     setField({
@@ -179,6 +195,11 @@ function RegisterForm(props) {
                         cpassword: '',
                         location_long: '',
                         location_lat: '',
+                    });
+                    setOrgField({
+                        name: 'None',
+                        cpname: '',
+                        cpnumber: '',
                     });
                 }
             });
@@ -329,6 +350,39 @@ function RegisterForm(props) {
                                 value={field.cpassword}
                                 onChange={onChangeHandler}
                                 label="Confirm Password"
+                            />
+
+                            <Select
+                                label="Organization Name"
+                                id="orgName"
+                                name={'orgname'}
+                                value={orgfield.name}
+                                style={_customStyle}
+                                onChange={onChangeHandler}
+                            >
+                                <MenuItem value={'None'}>None</MenuItem>
+                                <MenuItem value={'Department of Health'}>Department of Health</MenuItem>
+                                <MenuItem value={'Red Cross'}>Red Cross</MenuItem>
+                            </Select>
+
+                            <TextField
+                                id="orgcp"
+                                type="text"
+                                error={error.org_name === '' ? false : true}
+                                helperText={error.org_name}
+                                style={customStyle}
+                                value={orgfield.cpname}
+                                onChange={onChangeHandler}
+                                label="Organization Contact Person"
+                            />
+
+                            <TextField
+                                id="orgcn"
+                                type="text"
+                                style={customStyle}
+                                value={orgfield.cpnumber}
+                                onChange={onChangeHandler}
+                                label="Organization Contact Person Number"
                             />
                         </div>
                         <div style={{ marginTop: '30px', width: '100%' }}>

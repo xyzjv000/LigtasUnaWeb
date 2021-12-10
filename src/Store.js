@@ -11,6 +11,10 @@ const initialState = {
     location_Long: null,
     location_Lat: null,
     reports: 0,
+    org_id: null,
+    org_name: null,
+    org_contact_person: null,
+    org_contact_number: null,
     api_url: 'https://ligtasunaapi.azurewebsites.net/api/',
 };
 

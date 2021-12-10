@@ -161,13 +161,13 @@ function Users() {
             <Fab
                 onClick={getSubscribers}
                 variant="extended"
-                style={{ color: 'white', backgroundColor: '#794cfe', position: 'absolute', bottom: 20, right: 20 }}
+                style={{ color: 'white', backgroundColor: '#794cfe', position: 'absolute', bottom: 20, right: 20, zIndex: 100 }}
                 className={classes.margin}
             >
                 <RefreshIcon className={classes.extendedIcon} />
                 Refresh
             </Fab>
-            <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Button variant="outlined" className={_page === 'approved' ? 'userButtonCheck' : null} onClick={() => changePage('approved')}>
                     Approved Users
                 </Button>
@@ -177,6 +177,10 @@ function Users() {
                 <Button variant="outlined" className={_page === 'reject' ? 'userButtonCheck' : null} onClick={() => changePage('reject')}>
                     Rejected Users
                 </Button>
+                <p style={{ fontSize: '1.2rem', flex: 1, textAlign: 'right' }}>
+                    {subs.filter((i) => i.status === status).length}{' '}
+                    {status === 'active' ? 'Approved' : status === 'inactive' ? 'Pending' : status === 'reject' ? 'Rejected' : null}
+                </p>
             </div>
             <TableContainer style={{ height: '80vh' }} component={Paper}>
                 <Table className={classes.table} aria-label="customized table">

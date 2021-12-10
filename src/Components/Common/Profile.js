@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Button, Paper, TextField, ThemeProvider, createTheme } from '@material-ui/core';
+import { makeStyles, Button, Paper, TextField, ThemeProvider, createTheme, Select, MenuItem } from '@material-ui/core';
 import { useState, useContext } from 'react';
 import { Context } from '../../Store';
 import { ToastContainer, toast } from 'react-toastify';
@@ -27,6 +27,8 @@ const Profile = (props) => {
         year: 'numeric', // numeric, 2-digit
         month: 'long', // numeric, 2-digit, long, short, narrow
     };
+    const [orgfield, setOrgField] = useState({ name: 'None', cpname: '', cpnumber: '' });
+    const [error, setError] = useState({ user_fname: '', user_lname: '', user_address: '', org_name: '' });
     const [canUpdate, setCanUpdate] = useState(false);
     const [user, setUser] = useContext(Context);
     const [updateBody, setUpdateBody] = useState({
@@ -36,6 +38,9 @@ const Profile = (props) => {
         user_Address: user.user_Address,
         user_ConNum: user.user_ConNum,
         username: user.username,
+        org_name: user.org_name,
+        org_contact_person: user.org_contact_person,
+        org_contact_number: user.org_contact_number,
         password: '',
         cpassword: '',
     });
@@ -53,21 +58,27 @@ const Profile = (props) => {
             updateBody.user_ConNum === ''
         ) {
             missingInput();
+        } else if (updateBody.user_ConNum.length !== 11 || updateBody.org_contact_number.length !== 11) {
+            errorNum();
         } else {
             if (updateBody.password === '' && updateBody.cpassword === '') {
                 //Api call here
-                setUpdateBody({ ...updateBody, password: null });
-                setUpdateBody({ ...updateBody, cpassword: null });
+                // setUpdateBody({ ...updateBody, password: null });
+                // setUpdateBody({ ...updateBody, cpassword: null });
+                setUpdateBody(delete updateBody.password);
+                setUpdateBody(delete updateBody.cpassword);
                 isValid = true;
             } else {
                 if (updateBody.password.length < 8 || updateBody.cpassword.length < 8) {
                     passErr();
+                    isValid = false;
                 } else {
                     if (updateBody.cpassword === updateBody.password) {
                         // API call here
                         isValid = true;
                     } else {
                         passwordNotMatch();
+                        isValid = false;
                     }
                 }
             }
@@ -88,16 +99,37 @@ const Profile = (props) => {
                             location_Long: prev.location_Long,
                             location_Lat: prev.location_Lat,
                             reports: prev.reports,
+                            org_id: prev.org_id,
+                            org_name: prev.org_name,
+                            org_contact_person: prev.org_contact_person,
+                            org_contact_number: prev.org_contact_number,
                             api_url: prev.api_url,
                         }));
                     }
                 });
+
+                await axios
+                    .post(`${user.api_url}organization/update?userId=${updateBody.user_ID}`, {
+                        name: updateBody.org_name,
+                        contact_Name: updateBody.org_contact_person,
+                        contact_Number: updateBody.org_contact_number,
+                    })
+                    .then((org) => {
+                        console.log(org);
+                        setUser({
+                            ...user,
+                            org_name: org.data[0].name,
+                            org_contact_number: org.data[0].contact_Number,
+                            org_contact_person: org.data[0].contact_Name,
+                        });
+                    });
             } catch (error) {
                 alert('Connection Error');
             }
 
             successUpdate();
             setCanUpdate(false);
+            // props.userSet(updateBody);
             props.modalCLose();
         }
     };
@@ -126,6 +158,25 @@ const Profile = (props) => {
         }
         if (valId === 'cpassword') {
             setUpdateBody({ ...updateBody, cpassword: value });
+        }
+
+        if (valId === 'orgcn') {
+            setUpdateBody({ ...updateBody, org_contact_number: value });
+            // setOrgField({ ...orgfield, cpnumber: e.target.value });
+        }
+
+        if (valId === 'orgcp') {
+            const newValue = e.target.value;
+            if (!newValue.match(/[%<>\\$'"*!@#^&()+={}|:;,.?_-]/)) {
+                setError({ ...error, org_name: '' });
+            } else {
+                setError({ ...error, org_name: 'Special Character not allowed!' });
+            }
+            setUpdateBody({ ...updateBody, org_contact_person: value });
+        }
+
+        if (e.target.name === 'orgname') {
+            setUpdateBody({ ...updateBody, org_name: value });
         }
     };
 
@@ -172,12 +223,23 @@ const Profile = (props) => {
             draggable: true,
             progress: undefined,
         });
+
+    const errorNum = () =>
+        toast.warn('Contact Number must be 11 digits!', {
+            position: 'top-center',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
     return (
         <ThemeProvider theme={theme}>
             <Paper style={{ margin: '20px' }} className={classes.root}>
                 <div
                     style={{
-                        height: '25rem',
+                        minHeight: '25rem',
                         width: '60rem',
                         padding: '30px 50px',
                         display: 'flex',
@@ -243,6 +305,43 @@ const Profile = (props) => {
                                     disabled={!canUpdate}
                                 />
                             </div>
+                            <div className="thirdRow" style={{ flexDirection: 'column' }}>
+                                <Select
+                                    label="Organization Name"
+                                    id="orgName"
+                                    name={'orgname'}
+                                    value={updateBody.org_name}
+                                    onChange={onValueChanges}
+                                    style={{ width: '100%', height: '48px', textAlign: 'left', marginBottom: 5 }}
+                                    disabled={!canUpdate}
+                                >
+                                    <MenuItem value={'None'}>None</MenuItem>
+                                    <MenuItem value={'Department of Health'}>Department of Health</MenuItem>
+                                    <MenuItem value={'Red Cross'}>Red Cross</MenuItem>
+                                </Select>
+                                <TextField
+                                    id="orgcp"
+                                    type="text"
+                                    error={error.org_name === '' ? false : true}
+                                    helperText={error.org_name}
+                                    value={updateBody.org_contact_person}
+                                    onChange={onValueChanges}
+                                    style={{ width: '100%' }}
+                                    label="Organization Contact Person"
+                                    disabled={!canUpdate}
+                                />
+
+                                <TextField
+                                    id="orgcn"
+                                    type="text"
+                                    value={updateBody.org_contact_number}
+                                    onChange={onValueChanges}
+                                    style={{ width: '100%' }}
+                                    label="Organization Contact Person Number"
+                                    disabled={!canUpdate}
+                                />
+                            </div>
+
                             <div className="fourthRow">
                                 <TextField
                                     onChange={onValueChanges}

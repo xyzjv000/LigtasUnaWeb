@@ -446,7 +446,7 @@ function App() {
                 }}
             >
                 <Fade in={openModal}>
-                    <Profile modalCLose={handleModalClose} />
+                    <Profile modalCLose={handleModalClose} userSet={serUser} />
                 </Fade>
             </Modal>
         </div>
